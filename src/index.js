@@ -5,6 +5,8 @@ import { createStore } from 'redux'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
+import './index.css'
+import Content from './content'
 
 
 const weatherUrl = '/api/weather';
@@ -23,7 +25,6 @@ const getWeather = () => {
       }
       return response.json();
     })
-    .then(data => data)
     .catch(error => {
       console.error(error);
     });
@@ -52,11 +53,43 @@ const locationReducer = (state = initialState, action) => {
 };
 
 const store = createStore(locationReducer)
+let weatherData, nlc;
+const fetchData = async () => {
+    const response = await fetch(weatherUrl);
+    weatherData = await response.json();
+    const respons = await fetch('/');
+    nlc = await respons.json();
+    console.log(weatherData);
+    console.log(nlc);
+};
+fetchData();
+getLocation();
 
 const App = () => {
+  //sorry i got tired of this taking long
+  const Form = () => {
+    return(
+      <div>
+        <form onSubmit={handleSubmit}>
+          <label>
+            City:
+            <input type="text" value={city} onChange={handleCity} />
+          </label>
+          <br />
+          <label>
+            Date:
+            <DatePicker selected={date} onChange={handleDate} />
+          </label>
+          <br />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    )
+  }
+  
   const [city, setCity] = useState('');
   const [date, setDate] = useState('');
-
+  
   const handleCity = (event) => {
     setCity(event.target.value);
   };
@@ -65,37 +98,36 @@ const App = () => {
     setDate(selectedDate);
   };
 
-  const handleSubmit = (event) => {
+  //submits, saves the date and location and then sends to server for weatherData
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     let Date = format(date, 'yyyy-MM-dd');
     store.dispatch({ type: 'SET_CITY', payload: city });
     store.dispatch({ type: 'SET_DATE', payload: Date });
     console.log(Date);
-    getWeather();
+    console.log(city);
+    try {
+      let weatherData = await getWeather();
+      console.log(weatherData);
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
+  //JSX
+  console.log(weatherData);
+  console.log(nlc);
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label>
-          City:
-          <input type="text" value={city} onChange={handleCity} />
-        </label>
-        <br />
-        <label>
-          Date:
-          <DatePicker selected={date} onChange={handleDate} />
-        </label>
-        <br />
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+    <>
+      <Form />
+      <Content data={weatherData} nlc={nlc} />
+    </>
   )
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-getLocation();
 function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(transmitPosition);
