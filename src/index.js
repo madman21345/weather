@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import ReactDOM from 'react-dom/client'
+import React, {useState, useEffect} from 'react'
+import {createRoot} from 'react-dom/client'
 //import axios from 'axios'
 import { createStore } from 'redux'
 import DatePicker from 'react-datepicker';
@@ -53,17 +53,6 @@ const locationReducer = (state = initialState, action) => {
 };
 
 const store = createStore(locationReducer)
-let weatherData, nlc;
-const fetchData = async () => {
-    const response = await fetch(weatherUrl);
-    weatherData = await response.json();
-    const respons = await fetch('/');
-    nlc = await respons.json();
-    console.log(weatherData);
-    console.log(nlc);
-};
-fetchData();
-getLocation();
 
 const App = () => {
   //sorry i got tired of this taking long
@@ -89,6 +78,9 @@ const App = () => {
   
   const [city, setCity] = useState('');
   const [date, setDate] = useState('');
+  const [weatherData, setWeatherData] = useState(null);
+  const [nlc, setNlc] = useState(null);
+  let history = false;
   
   const handleCity = (event) => {
     setCity(event.target.value);
@@ -109,11 +101,31 @@ const App = () => {
     console.log(city);
     try {
       let weatherData = await getWeather();
-      console.log(weatherData);
+      //console.log(weatherData);
+      setWeatherData(weatherData);
+      history = true;
     } catch (error) {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [weatherR, nlcR] = await Promise.all([
+        fetch(weatherUrl),
+        fetch('http://localhost:3001/')
+      ]);
+      
+      const data = await weatherR.json();
+      const nloc = await nlcR.json();
+      //console.log(weatherData);
+      //console.log(nlc);
+      setWeatherData(data);
+      setNlc(nloc);
+    };
+    fetchData();
+    getLocation();
+  }, []);
   
   //JSX
   console.log(weatherData);
@@ -121,12 +133,10 @@ const App = () => {
   return (
     <>
       <Form />
-      <Content data={weatherData} nlc={nlc} />
+      {weatherData && nlc && <Content data={weatherData} nlc={nlc.nlc} history={history} />}
     </>
   )
 }
-
-const root = ReactDOM.createRoot(document.getElementById('root'))
 
 function getLocation() {
   if (navigator.geolocation) {
@@ -149,9 +159,12 @@ function transmitPosition(position) {
   });
 };
 
-const renderApp = () => {
-  root.render(<App />)
-}
+const root = document.getElementById('root');
+const rootApp = createRoot(root);
 
-renderApp()
-store.subscribe(renderApp)
+const renderApp = () => {
+  rootApp.render(<App />);
+};
+
+renderApp();
+store.subscribe(renderApp);

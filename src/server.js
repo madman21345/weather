@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
         lat = 9.5127;
         lng = 122.8797;
     }
-    res.send(noLocAvailable);
+    res.send({nlc: noLocAvailable});
 });
   
 app.get('/api/weather', (req, res) => {
@@ -94,7 +94,7 @@ app.post('/save_location', (req, res) => {
     req.session.lat = lat;
     req.session.lng = lng;
     //console.log(req.session.lng);
-    res.redirect('/api/weather');
+    res.redirect('/');
 });
   
 
