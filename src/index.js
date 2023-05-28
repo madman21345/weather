@@ -30,7 +30,8 @@ const getWeather = () => {
 
 const initialState = {
   city: '',
-  date: null
+  date: null,
+  weatherData: null
 };
 
 const locationReducer = (state = initialState, action) => {
@@ -45,6 +46,11 @@ const locationReducer = (state = initialState, action) => {
         ...state,
         date: action.payload
       };
+    case 'SET_WEATHER_DATA': // New action type for setting weatherData
+      return {
+        ...state,
+        weatherData: action.payload
+      };
     default:
       return state;
   }
@@ -56,7 +62,6 @@ const App = () => {
   
   const [city, setCity] = useState('');
   const [date, setDate] = useState('');
-  const [weatherData, setWeatherData] = useState(null);
   const [nlc, setNlc] = useState(null);
   const [history, setHistory] = useState(false);
   
@@ -78,9 +83,9 @@ const App = () => {
     //console.log(Date);
     //console.log(city);
     try {
-      let weatherData = await getWeather();
+      let data = await getWeather();
       //console.log(weatherData);
-      setWeatherData(weatherData);
+      store.dispatch({type:'SET_WEATHER_DATA', payload: data});
       setHistory(true);
       
     } catch (error) {
@@ -99,30 +104,34 @@ const App = () => {
       const nloc = await nlcR.json();
       //console.log(weatherData);
       //console.log(nlc);
-      setWeatherData(data);
+      store.dispatch({type:'SET_WEATHER_DATA', payload: data});
       setNlc(nloc);
     };
     fetchData();
     getLocation();
   }, []);
+
+  const weatherData = store.getState().weatherData;
   
-  //JSX
-  console.log(weatherData);
+  //console.log(weatherData);
   //console.log(history);
+  //JSX only prints output when it has been recieved
   return (
-    <>
+    <div className="weather-info">
       <Form city={city} handleCity={handleCity} date={date} handleDate={handleDate} handleSubmit={handleSubmit} />
       {weatherData && (weatherData.current || weatherData.forecast) && nlc && <Content data={weatherData} nlc={nlc.nlc} history={history} />}
-    </>
+    </div>
   )
 }
 
+//getting location from browser
 function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(transmitPosition);
   };
 };
 
+//sending location to server
 function transmitPosition(position) {
   fetch("/save_location", {
     method: "POST",
@@ -138,12 +147,14 @@ function transmitPosition(position) {
   });
 };
 
+
+//starting app/rendering app
 const root = document.getElementById('root');
 const rootApp = createRoot(root);
 
 const renderApp = () => {
   rootApp.render(<App />);
+  store.subscribe(renderApp);
 };
 
 renderApp();
-store.subscribe(renderApp);

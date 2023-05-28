@@ -4,7 +4,7 @@ const Content = ({data, nlc, history}) => {
 
     if(!history){
         return(
-            <div className="weather-info">
+            <>
                 <div className="middlediv">
                     <p className="date">
                     {nlc ? (
@@ -62,7 +62,7 @@ const Content = ({data, nlc, history}) => {
                         <p>
                         Feels Like: {data.current.feelslike_f}F · {data.current.feelslike_c}C<br />
                         Precipitation: {data.current.precip_in}in · {data.current.precip_mm}mm<br />
-                        Gust: {data.current.gust_mph}MPH · {data.current.gust_kph}KPH<br />
+                        Wind: {data.current.gust_mph}MPH · {data.current.gust_kph}KPH<br />
                         Humidity: {data.current.humidity}%<br />
                         UV: {data.current.uv}<br />
                         Pressure: {data.current.pressure_mb}mb
@@ -70,11 +70,11 @@ const Content = ({data, nlc, history}) => {
                     </>
                     )}
                 </div>
-            </div>
+            </>
         )
     }else {
         return(
-            <div className="weather-info">
+            <>
                 <div className="middlediv">
                     <p className="date">
                         <>
@@ -116,7 +116,7 @@ const Content = ({data, nlc, history}) => {
                         </p>
                     </>
                 </div>
-            </div>
+            </>
         )
     }
 }

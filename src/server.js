@@ -76,7 +76,7 @@ app.post('/api/weather', (req, res) => {
     }else{
     url = `http://api.weatherapi.com/v1/history.json?key=${API_KEY}&q=${city}&dt=${date}&aqi=yes`;
     };
-    console.log(url);
+    //console.log(url);
     request(url, (error, response, body) => {
         if (error) {
             console.error(error);
