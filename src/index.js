@@ -2,12 +2,10 @@ import React, {useState, useEffect} from 'react'
 import {createRoot} from 'react-dom/client'
 //import axios from 'axios'
 import { createStore } from 'redux'
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import './index.css'
 import Content from './content'
-
+import Form from './form'
 
 const weatherUrl = '/api/weather';
 
@@ -55,32 +53,12 @@ const locationReducer = (state = initialState, action) => {
 const store = createStore(locationReducer)
 
 const App = () => {
-  //sorry i got tired of this taking long
-  const Form = () => {
-    return(
-      <div>
-        <form onSubmit={handleSubmit}>
-          <label>
-            City:
-            <input type="text" value={city} onChange={handleCity} />
-          </label>
-          <br />
-          <label>
-            Date:
-            <DatePicker selected={date} onChange={handleDate} />
-          </label>
-          <br />
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-    )
-  }
   
   const [city, setCity] = useState('');
   const [date, setDate] = useState('');
   const [weatherData, setWeatherData] = useState(null);
   const [nlc, setNlc] = useState(null);
-  let history = false;
+  const [history, setHistory] = useState(false);
   
   const handleCity = (event) => {
     setCity(event.target.value);
@@ -97,13 +75,14 @@ const App = () => {
     let Date = format(date, 'yyyy-MM-dd');
     store.dispatch({ type: 'SET_CITY', payload: city });
     store.dispatch({ type: 'SET_DATE', payload: Date });
-    console.log(Date);
-    console.log(city);
+    //console.log(Date);
+    //console.log(city);
     try {
       let weatherData = await getWeather();
       //console.log(weatherData);
       setWeatherData(weatherData);
-      history = true;
+      setHistory(true);
+      
     } catch (error) {
       console.error(error);
     }
@@ -129,11 +108,11 @@ const App = () => {
   
   //JSX
   console.log(weatherData);
-  console.log(nlc);
+  //console.log(history);
   return (
     <>
-      <Form />
-      {weatherData && nlc && <Content data={weatherData} nlc={nlc.nlc} history={history} />}
+      <Form city={city} handleCity={handleCity} date={date} handleDate={handleDate} handleSubmit={handleSubmit} />
+      {weatherData && (weatherData.current || weatherData.forecast) && nlc && <Content data={weatherData} nlc={nlc.nlc} history={history} />}
     </>
   )
 }

@@ -6,7 +6,7 @@ const Content = ({data, nlc, history}) => {
         return(
             <div className="weather-info">
                 <div className="middlediv">
-                    <p className="recommendation">
+                    <p className="date">
                     {nlc ? (
                         <>
                         Please enable Location Services, then Refresh the page
@@ -75,10 +75,18 @@ const Content = ({data, nlc, history}) => {
     }else {
         return(
             <div className="weather-info">
+                <div className="middlediv">
+                    <p className="date">
+                        <>
+                        {data.forecast.forecastday[0].date}
+                        </>
+                    </p>
+                </div>
+
                 <div className="leftdiv">
                     <p className="weather">
                         <>
-                        {data.forecast.forecastday[0].condition.text}
+                        {data.forecast.forecastday[0].day.condition.text}
                         </>
                     </p>
                     <br />
@@ -86,7 +94,7 @@ const Content = ({data, nlc, history}) => {
                     <p className="temp">
                     {!nlc && (
                         <>
-                        {data.forecast.forecastday[0].avgtemp_c}°C
+                        {data.forecast.forecastday[0].day.avgtemp_c}°C
                         </>
                     )}
                     </p>
@@ -100,11 +108,11 @@ const Content = ({data, nlc, history}) => {
                         </p>
                         <p>
                         Avg Stats<br />
-                        Precipitation: {data.forecast.forecastday[0].totalprecip_in}in · {data.forecast.forecastday[0].totalprecip_mm}mm<br />
-                        Max WindSpeed: {data.forecast.forecastday[0].maxwind_mph}MPH · {data.forecast.forecastday[0].maxwind_kph}KPH<br />
-                        Humidity: {data.forecast.forecastday[0].avghumidity}%<br />
-                        UV: {data.forecast.forecastday[0].uv}<br />
-                        Pressure: {data.forecast.hour[12].pressure_mb}mb
+                        Precipitation: {data.forecast.forecastday[0].day.totalprecip_in}in · {data.forecast.forecastday[0].day.totalprecip_mm}mm<br />
+                        Max WindSpeed: {data.forecast.forecastday[0].day.maxwind_mph}MPH · {data.forecast.forecastday[0].day.maxwind_kph}KPH<br />
+                        Humidity: {data.forecast.forecastday[0].day.avghumidity}%<br />
+                        UV: {data.forecast.forecastday[0].day.uv}<br />
+                        Pressure: {data.forecast.forecastday[0].hour[12].pressure_mb}mb
                         </p>
                     </>
                 </div>
