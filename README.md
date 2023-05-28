@@ -1,7 +1,8 @@
 # Weather webapp
 to start must npm install
-and then npm run server
-and then npm start
+-> npm run server
+-> npm start
+
 which should open the app in the browser
 
 requires a refresh after starting app, to display current data, but will show historical data without a refresh
